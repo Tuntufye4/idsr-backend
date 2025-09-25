@@ -46,14 +46,14 @@ class PatientCase(models.Model):
     form_completed_by = models.CharField(max_length=200)
     date_form_completed = models.DateField()
 
-    reporting_week_number = models.IntegerField()
-    year = models.IntegerField()
+    reporting_week_number = models.IntegerField(blank=True, null=True)
+    year = models.IntegerField(blank=True, null=True)
     health_facility_code = models.CharField(max_length=50)
-    district_code = models.CharField(max_length=50)
-    form_version = models.CharField(max_length=50)
+    district_code = models.CharField(max_length=50)     
+    form_version = models.CharField(max_length=50)     
 
-    observations = models.TextField(blank=True, null=True)
+    observations = models.TextField(blank=True, null=True)    
 
     def __str__(self):
-        return f"{self.full_name} ({self.patient_id})"
-                                      
+        return f"{self.full_name} ({self.patient_id})"        
+                                          
