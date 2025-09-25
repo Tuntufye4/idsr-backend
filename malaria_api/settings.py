@@ -26,20 +26,20 @@ SECRET_KEY = 'django-insecure-uahq&aw8a78(do5vtzd8q9ein0yt+05y9fi(++!^%u5^%#z#(0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True                     
 
-ALLOWED_HOSTS = ['idsr-backend.onrender.com','localhost']                                                                                          
+ALLOWED_HOSTS = ['idsr-backend.onrender.com','localhost', '127.0.0.1']                                                                                          
                                 
                        
                                         
-# Application definition                           
+# Application definition                              
                   
 INSTALLED_APPS = [      
-    'django.contrib.admin',
+    'django.contrib.admin',  
     'django.contrib.auth',   
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
+    'django.contrib.messages',   
     'django.contrib.staticfiles',
-    'rest_framework',
+    'rest_framework',    
     'corsheaders',
     'patients',  
 ]
@@ -135,4 +135,3 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-                            
