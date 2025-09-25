@@ -46,8 +46,8 @@ class PatientCase(models.Model):
     form_completed_by = models.CharField(max_length=200)
     date_form_completed = models.DateField()
 
-    reporting_week_number = models.CharField(blank=True, null=True)
-    year = models.CharField(blank=True, null=True)
+    reporting_week_number = models.IntegerField()    
+    year = models.IntegerField()
     health_facility_code = models.CharField(max_length=50)
     district_code = models.CharField(max_length=50)     
     form_version = models.CharField(max_length=50)     
