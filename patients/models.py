@@ -7,7 +7,7 @@ class PatientCase(models.Model):
     full_name = models.CharField(max_length=200)
     age = models.IntegerField()    
     sex = models.CharField(max_length=10)   
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField()   
     national_id = models.CharField(max_length=100, blank=True, null=True)    
 
     village = models.CharField(max_length=200)
@@ -15,8 +15,8 @@ class PatientCase(models.Model):
     health_facility = models.CharField(max_length=200)
     district = models.CharField(max_length=200)
     region = models.CharField(max_length=100)
-   
-    date_onset_symptoms = models.DateField()
+      
+    date_onset_symptoms = models.DateField()   
     date_first_seen = models.DateField()
     disease = models.CharField(max_length=200)
     case_classification = models.CharField(max_length=100)    
