@@ -44,9 +44,11 @@ INSTALLED_APPS = [
     'patients',  
     'lab',
     'clinical',
-    'facility',
+    'facility',   
     'surveillance_info',
     'treatment',
+    'epidemiological',
+    'outcomes',        
 ]
 
 MIDDLEWARE = [

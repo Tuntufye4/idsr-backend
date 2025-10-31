@@ -14,7 +14,7 @@ class PatientCase(models.Model):
     health_facility = models.CharField(max_length=200)
     district = models.CharField(max_length=200)
     region = models.CharField(max_length=100)    
-    date_first_seen = models.DateField()
+    date_first_seen = models.DateField()    
     outcome = models.CharField(max_length=100)
     date_of_death = models.DateField(blank=True, null=True) 
     date_result_received = models.DateField(blank=True, null=True)  
