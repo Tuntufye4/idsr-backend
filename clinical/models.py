@@ -9,7 +9,6 @@ class ClinicalCase(models.Model):
     date_of_onset = models.DateField(blank=True, null=True)
     case_classification = models.CharField(max_length=100)
     symptoms = models.CharField(max_length=200)    
-    outcome = models.CharField(max_length=100)
     triage_level = models.CharField(max_length=100)
     diagnosis_type = models.CharField(max_length=100)    
     final_case_classification = models.CharField(max_length=100)

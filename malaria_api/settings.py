@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'surveillance_info',
     'treatment',
     'epidemiological',
-    'outcomes',        
+    'outcomes', 
+    'opt',         
 ]
 
 MIDDLEWARE = [

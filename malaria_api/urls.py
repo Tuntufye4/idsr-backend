@@ -11,5 +11,6 @@ urlpatterns = [
     path('api/', include('outcomes.urls')),
     path('api/', include('surveillance_info.urls')),
     path('api/', include('treatment.urls')),  
-]
+    path('api/', include('opt.urls')),  
+]   
         
