@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings   
 from django.urls import path, include
 
 urlpatterns = [
@@ -12,5 +13,11 @@ urlpatterns = [
     path('api/', include('surveillance_info.urls')),
     path('api/', include('treatment.urls')),  
     path('api/', include('opt.urls')),  
-]   
+]     
         
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]   
