@@ -9,3 +9,5 @@ PyYAML>=6.0
 gunicorn>=21.2.0
 # Static files (optional, useful for API docs or admin CSS/JS)
 whitenoise>=6.6.0   
+django-debug-toolbar==3.2.4   
+     
