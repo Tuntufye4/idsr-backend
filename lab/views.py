@@ -14,7 +14,7 @@ class LabViewSet(viewsets.ModelViewSet):
         specimen_type  = self.request.query_params.get('specimen_type')
         lab_result = self.request.query_params.get('lab_result')   
         lab_tests_ordered = self.request.query_params.get('lab_tests_ordered')   
-        lab_name = self.request.query_params.get('lab_name')   
+        lab_name = self.request.query_params.get('lab_name')      
 
         if specimen_type:
             queryset = queryset.filter(specimen_type__iexact=specimen_type)
@@ -50,7 +50,12 @@ class LabViewSet(viewsets.ModelViewSet):
             .annotate(count=Count('id'))
             .order_by('-count')
         )
-
+        
+        data['labtestsordered'] = (
+            Lab.objects.values('lab_tests_ordered')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
 
         return Response(data)
    
