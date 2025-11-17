@@ -114,6 +114,16 @@
 |Referral facility| String| Name of the referral facility |
 
 
+### Outcome
+
+- Outcome details      
+
+| Field | Data Type | Description |
+|-------|-----------|-------------|
+|Outcome | String | Outcome name|   
+|Date of outcome| Date | Outcome date|    
+
+
 
 [IDSR API](
 https://idsr-backend.onrender.com/api/cases/)
