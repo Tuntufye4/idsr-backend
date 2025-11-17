@@ -48,7 +48,7 @@
 
 ### Lab
 
--Lab details
+- Lab details
 
 | Field | Data Type | Description |
 |-------|-----------|-------------|
@@ -70,15 +70,15 @@
 |-------|-----------|-------------|
 |Disease | String | Disease name i.e Malaria etc |
 |Date of onset| Date| Date of onset |
-|Case classification| String | Whether case is probable or confirmed etc|
+|Case classification| String | Whether case is probable or confirmed or suspected |
 |Symptoms | String| Patient symptoms i.e headache etc|
 |Triage level | String | Triage level i.e|
 |Diagnosis type | String | Diagnosis type  i.e|
-|Final case classification | String | final case classification i.e |
+|Final case classification | String | Whether case is probable or confirmed or suspected |
 |Admission status | String | admission status i.e |
-|Contact with confirmed case | String | contact with confirmed case i.e |
-|Recent travel history | String | If patient travelled or not i.e |
-|Travel destination| String | Patients/case travel destination i.e |
+|Contact with confirmed case | String | contact with confirmed case i.e yes/no |
+|Recent travel history | String | If patient travelled or not  |
+|Travel destination| String | Patients/case travel destination |
 
 ### Epidemiological Details
 
@@ -152,3 +152,4 @@ Tuntufye Mwanyongo
 
 
 
+   
