@@ -16,6 +16,7 @@
     - [Surveillance Information](#surveillance-information)
     - [Treatment](#treatment)
     - [Outcome](#outcome)
+    - [Maintainer](#maintainer)
 
 ---
 
@@ -142,6 +143,12 @@
 
 [IDSR API](
 https://idsr-backend.onrender.com/api/cases/)
+
+---
+
+### Maintainer
+
+Tuntufye Mwanyongo     
 
 
 

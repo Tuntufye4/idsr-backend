@@ -50,7 +50,12 @@ class FacilityViewSet(viewsets.ModelViewSet):
             .annotate(count=Count('id'))
             .order_by('-count')
         )
-
+        
+        data['designation'] = (
+            Facility.objects.values('designation')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
 
         return Response(data)
    

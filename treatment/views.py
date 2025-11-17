@@ -14,6 +14,7 @@ class TreatmentViewSet(viewsets.ModelViewSet):
         procedures_done  = self.request.query_params.get('procedures_done')
         follow_up_plan = self.request.query_params.get('follow_up_plan')  
         treatment_given = self.request.query_params.get('treatment_given')   
+        referral_facility = self.request.query_params.get('referral_facility')
 
         if procedures_done:
             queryset = queryset.filter(procedures_done__iexact=procedures_done)
@@ -23,6 +24,9 @@ class TreatmentViewSet(viewsets.ModelViewSet):
 
         if treatment_given:
             queryset = queryset.filter(treatment_given__icontains=treatment_given)
+
+        if referral_facility:
+            queryset = queryset.filter(referral_facility__icontains=referral_facility)
 
         return queryset                               
 
@@ -50,7 +54,12 @@ class TreatmentViewSet(viewsets.ModelViewSet):
             .annotate(count=Count('id'))
             .order_by('-count')
         )
-
+        
+        data['referralfacility'] = (
+            Treatment.objects.values('referral_facility')   
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )   
 
         return Response(data)
    

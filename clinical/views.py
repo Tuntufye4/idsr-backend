@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.db.models import Count, Avg, Min, Max
 from .models import ClinicalCase
-from .serializers import ClinicalCaseSerializer   
+from .serializers import ClinicalCaseSerializer      
 
 class ClinicalCaseViewSet(viewsets.ModelViewSet): 
     queryset = ClinicalCase.objects.all()   
@@ -13,7 +13,7 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
         queryset = ClinicalCase.objects.all()   
         outcome = self.request.query_params.get('outcome')
         symptoms = self.request.query_params.get('symptoms')
-        triage_level = self.request.query_params.get('triage_level')
+        triage_level = self.request.query_params.get('triage_level')   
         diagnosis_type = self.request.query_params.get('diagnosis_type')
         admission_status = self.request.query_params.get('admission_status')
         final_case_classification = self.request.query_params.get('final_case_classification')
@@ -58,27 +58,31 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
             .order_by('-count')
         )
 
-
-        # You can easily add more analytics:
+        # Case counts per symptoms  
+        
         data['symptoms'] = (
             ClinicalCase.objects.values('symptoms')
             .annotate(count=Count('id'))
             .order_by('-count')
         )
 
+        # Case counts per triage level
+
         data['triagelevel'] = (
             ClinicalCase.objects.values('triage_level')
             .annotate(count=Count('id'))
             .order_by('-count')
         )
-
+        
+        # Case counts per diagnosis_type
 
         data['diagnosistype'] = (
             ClinicalCase.objects.values('diagnosis_type')
             .annotate(count=Count('id'))
             .order_by('-count')
         )
-
+        
+        # Case counts per case classification
         
         data['caseclassification'] = (
             ClinicalCase.objects.values('case_classification')
@@ -91,6 +95,8 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
             .annotate(count=Count('id'))
             .order_by('-count')
         )
+
+        # Case counts per admission status
         
         data['admissionstatus'] = (
             ClinicalCase.objects.values('admission_status')
@@ -104,6 +110,20 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
             .order_by('-count')    
         )
              
+
+        data['traveldestination'] = (
+            ClinicalCase.objects.values('travel_destination')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )    
+
+        
+        data['recenttravelhistory'] = (
+            ClinicalCase.objects.values('recent_travel_history')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )   
+
         return Response(data)
    
     
