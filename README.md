@@ -102,6 +102,19 @@
 |Supervisor comments| String | Comments made by the supervisor |
 
 
+### Treatment
+
+- Treatment details       
+
+| Field | Data Type | Description |
+|-------|-----------|-------------|
+|Treatment given | Int | The type of treatment given to a patient .i.e|   
+|Procedures done| String | Name of procedure|
+|Follow up plan| String | The follow up plan |
+|Referral facility| String| Name of the referral facility |
+
+
+
 [IDSR API](
 https://idsr-backend.onrender.com/api/cases/)
 
