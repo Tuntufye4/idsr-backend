@@ -4,6 +4,21 @@
 
 ---
 
+## List of Services
+- [IDSR API](#idsr-api)
+  - [List of Services](#list-of-services)
+  - [IDSR API Categories/Services](#idsr-api-categoriesservices)
+    - [Demographics / Patient Details](#demographics--patient-details)
+    - [Lab](#lab)
+    - [Clinical Details](#clinical-details)
+    - [Epidemiological Details](#epidemiological-details)
+    - [Facility Details](#facility-details)
+    - [Surveillance Information](#surveillance-information)
+    - [Treatment](#treatment)
+    - [Outcome](#outcome)
+
+---
+
 ## IDSR API Categories/Services
     
 ### Demographics / Patient Details
@@ -121,7 +136,7 @@
 | Field | Data Type | Description |
 |-------|-----------|-------------|
 |Outcome | String | Outcome name|   
-|Date of outcome| Date | Outcome date|    
+|Date of outcome| Date | Outcome date|       
 
 
 
