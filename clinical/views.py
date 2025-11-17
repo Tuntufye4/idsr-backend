@@ -91,7 +91,19 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
             .annotate(count=Count('id'))
             .order_by('-count')
         )
+        
+        data['admissionstatus'] = (
+            ClinicalCase.objects.values('admission_status')
+            .annotate(count=Count('id'))
+            .order_by('-count')     
+        )
 
+        data['contactwithconfirmedcase'] = (
+            ClinicalCase.objects.values('contact_with_confirmed_case')
+            .annotate(count=Count('id'))
+            .order_by('-count')    
+        )
+             
         return Response(data)
    
     
