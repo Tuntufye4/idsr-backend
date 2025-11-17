@@ -1,7 +1,7 @@
 # IDSR API
 
-- IDSR API is an integrated disease surveillance response api which is based on the IDSR World health organisation form.
-- It contains all the categories of the IDSR WHO form as a separate service.
+- IDSR API is an integrated disease surveillance response api which is based on the IDSR World health organisation form. It contains all the categories of
+ the IDSR WHO form as separate services.
 
 ## IDSR API Categories/Services
 
@@ -22,7 +22,7 @@
 |Region| String | Regions name |
 |Date first seen| Date | Date the patient was first seen|
 |Date of death|  Date | Date of death     |
-|Date results received| Date results received |
+|Date results received| Date| Date results received |
 |Vaccination status| String|  Patients vaccination status |
 |Date last vaccination| Date | Date patient was last vaccinated|
 
