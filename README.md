@@ -64,6 +64,44 @@
 |Recent travel history | String | If patient travelled or not i.e |
 |Travel destination| String | Patients/case travel destination i.e |
 
+### Epidemiological Details
+
+- Epidemiological details    
+
+| Field | Data Type | Description |
+|-------|-----------|-------------|
+|Environmental risk factors | String | Environmental risk factors i.e |   
+|Exposure source| String | Exposure source i.e |
+|Cluster related| String | Cluster related i.e |
+
+### Facility Details
+
+- Health facility details    
+
+| Field | Data Type | Description |
+|-------|-----------|-------------|
+|Designation | String | Type of the health personel  i.e Clinician or health surveillance officer |   
+|Date reported| String | The date the case was reported i.e |
+|Form completed by| String | Name of the person who completed the form i.e |
+|Health facility code| String | health facility code i.e |
+|Case source| String | case source i.e |
+|Reporting method| String | reporting method i.e Form or SMS or Electronic form |
+
+
+### Surveillance Information
+
+- Health surveillance information     
+
+| Field | Data Type | Description |
+|-------|-----------|-------------|
+|Reporting week number | Int | The week case was reported|   
+|Year| Date | The year case was reported |
+|Date reported| Date | The actual date case was reported  |
+|Notifier signature| String | Notifiers signature |
+|Reviewed by| String | Name of the form reviewer |
+|Supervisor comments| String | Comments made by the supervisor |
+
+
 [IDSR API](
 https://idsr-backend.onrender.com/api/cases/)
 
