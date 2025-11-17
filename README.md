@@ -3,6 +3,8 @@
 - IDSR API is an integrated disease surveillance response api which is based on the IDSR World health organisation form. It contains all the categories of
  the IDSR WHO form as separate services.
 
+---
+
 ## IDSR API Categories/Services
 
 ### Demographics / Patient Details
