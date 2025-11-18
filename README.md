@@ -7,7 +7,7 @@
 ## List of Services
 - [IDSR API](#idsr-api)
   - [List of Services](#list-of-services)
-  - [IDSR API Categories/Services](#idsr-api-categoriesservices)
+  - [Categories/Services](#categoriesservices)
     - [Demographics / Patient Details](#demographics--patient-details)
     - [Lab](#lab)
     - [Clinical Details](#clinical-details)
@@ -20,7 +20,7 @@
 
 ---
 
-## IDSR API Categories/Services
+## Categories/Services
     
 ### Demographics / Patient Details
 
