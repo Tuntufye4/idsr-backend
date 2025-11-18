@@ -57,6 +57,12 @@ class FacilityViewSet(viewsets.ModelViewSet):
             .order_by('-count')
         )
 
+        data['healthfacilitycode'] = (
+            Facility.objects.values('health_facility_code')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
+
         return Response(data)
    
    

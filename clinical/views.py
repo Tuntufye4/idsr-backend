@@ -19,6 +19,7 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
         final_case_classification = self.request.query_params.get('final_case_classification')
         contact_with_confirmed_case = self.request.query_params.get('contact_with_confirmed_case')
         case_classification = self.request.query_params.get('case_classification')
+        disease = self.request.query_params.get('disease')
 
         if outcome:
             queryset = queryset.filter(outcome__iexact=outcome)
@@ -43,6 +44,9 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
 
         if case_classification:
             queryset = queryset.filter(case_classification__icontains=case_classification)
+
+        if disease:
+            queryset = queryset.filter(disease__icontains=disease)
 
         return queryset
     
@@ -124,6 +128,12 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
             .order_by('-count')
         )   
 
-        return Response(data)
+        data['diseases'] = (
+            ClinicalCase.objects.values('disease')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
+
+        return Response(data)    
    
     
