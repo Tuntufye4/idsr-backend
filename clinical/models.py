@@ -1,10 +1,15 @@
 # models.py (Django backend updated for full patient data model)
 import uuid   
 from django.db import models
+from patients.models import PatientCase   
 
 class ClinicalCase(models.Model):      
-    patient_id = models.CharField(max_length=50, unique=True, editable=False, default=uuid.uuid4)
-    full_name = models.CharField(max_length=200)   
+    patient_id = models.ForeignKey(
+        PatientCase,
+        on_delete=models.SET_NULL,    
+        null=True,            
+        related_name='clinical_cases'  # <-- unique reverse name    
+    )         
     disease = models.CharField(max_length=200)
     date_of_onset = models.DateField(blank=True, null=True)
     case_classification = models.CharField(max_length=100)
