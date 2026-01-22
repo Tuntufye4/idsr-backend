@@ -10,11 +10,15 @@ class SurveillanceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = SurveillanceInfo.objects.all()
         year = self.request.query_params.get('year')
+        reviewed_by = self.request.query_params.get('reviewed_by')
  
 
         if year:
             queryset = queryset.filter(year__iexact=year)
 
+        if reviewed_by:
+            queryset = queryset.filter(reviewed_by__iexact=reviewed_by)
 
-        return queryset
+
+        return queryset         
                               
