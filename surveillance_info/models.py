@@ -1,11 +1,16 @@
 # models.py (Django backend updated for full patient data model)
 import uuid   
 from django.db import models
+from patients.models import PatientCase
 
 class SurveillanceInfo(models.Model):
-    patient_id = models.CharField(max_length=50, unique=True, editable=False, default=uuid.uuid4)
-    full_name = models.CharField(max_length=200)   
-    reporting_week_number = models.IntegerField()  
+    patient_id =  models.ForeignKey(    
+        PatientCase,
+        on_delete=models.SET_NULL,    
+        null=True,            
+        related_name='surveillance_info'  # <-- unique reverse name    
+    )    
+    reporting_week_number = models.IntegerField()      
     year = models.IntegerField()   
     date_reported = models.DateField()    
     notifier_signature = models.CharField(max_length=100, blank=True, null=True) 

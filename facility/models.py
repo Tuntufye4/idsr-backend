@@ -1,10 +1,15 @@
 # models.py (Django backend updated for full patient data model)
 import uuid   
 from django.db import models
+from patients.models import PatientCase
 
 class Facility(models.Model):
-    patient_id = models.CharField(max_length=50, unique=True, editable=False, default=uuid.uuid4)
-    full_name = models.CharField(max_length=200)    
+    patient_id =  models.ForeignKey(    
+        PatientCase,
+        on_delete=models.SET_NULL,    
+        null=True,            
+        related_name='facility'  # <-- unique reverse name    
+    )  
     designation = models.CharField(max_length=100)
     date_reported = models.DateField()
     form_completed_by = models.CharField(max_length=200)      
