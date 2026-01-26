@@ -14,9 +14,7 @@ class PatientCaseViewSet(viewsets.ModelViewSet):
         sex = self.request.query_params.get('sex')
         region = self.request.query_params.get('region')   
         district = self.request.query_params.get('district')  
-        village = self.request.query_params.get('village') 
-        vaccination_status = self.request.query_params.get('vaccination_status')
-        health_facility = self.request.query_params.get('health_facility')  
+        village = self.request.query_params.get('village')      
         traditional_authority = self.request.query_params.get('traditional_authority') 
 
         if sex:
@@ -30,12 +28,6 @@ class PatientCaseViewSet(viewsets.ModelViewSet):
 
         if village:
             queryset = queryset.filter(village__icontains=village)
-
-        if vaccination_status:
-            queryset = queryset.filter(vaccination_status__icontains=vaccination_status)
-
-        if health_facility:
-            queryset = queryset.filter(health_facility__icontains=health_facility)
 
         if traditional_authority:
             queryset = queryset.filter(traditional_authority__icontains=traditional_authority)
@@ -62,22 +54,6 @@ class PatientCaseViewSet(viewsets.ModelViewSet):
             .order_by('-count')
         )   
 
-        # Case counts per vaccination status     
-
-        data['vaccinationstatus'] = (
-            PatientCase.objects.values('vaccination_status')
-            .annotate(count=Count('id'))
-            .order_by('-count')   
-        )
-        
-        # Case counts per health facility   
-
-        data['health_facility'] = (
-            PatientCase.objects.values('health_facility')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-        
         # Case counts per village
 
         data['village'] = (
@@ -108,4 +84,4 @@ class PatientCaseViewSet(viewsets.ModelViewSet):
             .order_by('-count')
         )
             
-        return Response(data)
+        return Response(data)   

@@ -15,4 +15,4 @@ class Epidemiological_details(models.Model):
     cluster_related = models.CharField(max_length=200, blank=True, null=True)        
 
     def __str__(self):      
-        return f"{self.full_name} ({self.patient_id})"  
+        return f"{self.full_name} ({self.patient_id})"      
