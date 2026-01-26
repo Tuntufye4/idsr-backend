@@ -14,7 +14,7 @@ class TreatmentViewSet(viewsets.ModelViewSet):
         procedures_done  = self.request.query_params.get('procedures_done')
         follow_up_plan = self.request.query_params.get('follow_up_plan')  
         treatment_given = self.request.query_params.get('treatment_given')   
-        referral_facility = self.request.query_params.get('referral_facility')
+        referral_facility = self.request.query_params.get('referral_facility')   
 
         if procedures_done:
             queryset = queryset.filter(procedures_done__iexact=procedures_done)

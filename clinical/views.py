@@ -11,7 +11,6 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = ClinicalCase.objects.all()   
-        outcome = self.request.query_params.get('outcome')
         symptoms = self.request.query_params.get('symptoms')
         triage_level = self.request.query_params.get('triage_level')   
         diagnosis_type = self.request.query_params.get('diagnosis_type')
@@ -23,8 +22,6 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
         recent_travel_history = self.request.query_params.get('recent_travel_history')
         travel_destination = self.request.query_params.get('travel_destination')
 
-        if outcome:
-            queryset = queryset.filter(outcome__iexact=outcome)
 
         if symptoms:
             queryset = queryset.filter(symptoms__icontains=symptoms)
@@ -46,7 +43,7 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
 
         if case_classification:
             queryset = queryset.filter(case_classification__icontains=case_classification)
-
+   
         if disease:
             queryset = queryset.filter(disease__icontains=disease)
 
@@ -62,13 +59,6 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
     def stats(self, request):
         """Return summary statistics for Clinical case"""
         data = {}
-       
-        # Outcome counts
-        data['outcome'] = (
-            ClinicalCase.objects.values('outcome')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
 
         # Case counts per symptoms  
         
