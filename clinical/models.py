@@ -10,7 +10,7 @@ class ClinicalCase(models.Model):
         null=True,            
         related_name='clinical_cases'  # <-- unique reverse name    
     )         
-    disease = models.CharField(max_length=200)
+    disease = models.CharField(max_length=200)   
     date_of_onset = models.DateField(blank=True, null=True)
     case_classification = models.CharField(max_length=100)
     symptoms = models.CharField(max_length=200)    

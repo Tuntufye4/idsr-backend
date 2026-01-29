@@ -1,14 +1,16 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.db.models import Count
 from .models import ClinicalCase
 from .serializers import ClinicalCaseSerializer
+from patients.models import PatientCase
 
-class ClinicalCaseViewSet(viewsets.ModelViewSet):   
+class ClinicalCaseViewSet(viewsets.ModelViewSet):
     """
-    API endpoint for Clinical Cases with:
+    API endpoint for Clinical Cases:
     - Dynamic filtering via query params
+    - PATCH endpoint auto-creates row if it doesn't exist
     - Stats endpoint for charts
     """
     queryset = ClinicalCase.objects.all()
@@ -39,6 +41,28 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def partial_update(self, request, pk=None, *args, **kwargs):
+        """
+        PATCH endpoint: create ClinicalCase if it doesn't exist for patient_id,
+        then apply updates.
+        """
+        patient_id = request.data.get("patient_id")
+        if not patient_id:
+            return Response({"error": "patient_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            patient = PatientCase.objects.get(id=patient_id)
+        except PatientCase.DoesNotExist:
+            return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get or create the ClinicalCase for this patient
+        clinical_case, created = ClinicalCase.objects.get_or_create(patient_id=patient)
+
+        serializer = ClinicalCaseSerializer(clinical_case, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'])
     def stats(self, request):
         """Return summary statistics for charts"""
@@ -46,16 +70,20 @@ class ClinicalCaseViewSet(viewsets.ModelViewSet):
 
         # Helper function for generating counts dict
         def count_dict(field):
-            return {item[field]: item['count'] for item in
-                    ClinicalCase.objects.values(field).annotate(count=Count('id')).order_by('-count')}
+            return {
+                item[field]: item['count']
+                for item in ClinicalCase.objects.values(field).annotate(count=Count('id')).order_by('-count')
+            }
 
         # String fields
-        for field in ['symptoms', 'triage_level', 'diagnosis_type',
-                      'case_classification', 'final_case_classification',
-                      'admission_status', 'disease', 'travel_destination']:
+        for field in [
+            'symptoms', 'triage_level', 'diagnosis_type',
+            'case_classification', 'final_case_classification',
+            'admission_status', 'disease', 'travel_destination'
+        ]:
             data[field] = count_dict(field)
 
-        # Boolean fields
+        # Boolean fields    
         for field in ['contact_with_confirmed_case', 'recent_travel_history']:
             counts = ClinicalCase.objects.values(field).annotate(count=Count('id'))
             # Convert True/False to Yes/No for frontend readability
