@@ -1,47 +1,43 @@
-from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.db.models import Count
 from .models import Treatment
 from .serializers import TreatmentSerializer
+from patients.models import PatientCase
 
 class TreatmentViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint for Treatment cases with:   
-    - Dynamic filtering
-    - Stats endpoint for analytics/charts
-    """
     queryset = Treatment.objects.all()
     serializer_class = TreatmentSerializer
 
-    def get_queryset(self):
-        queryset = Treatment.objects.all()
-        params = self.request.query_params
+    def partial_update(self, request, pk=None, *args, **kwargs):
+        """
+        PATCH endpoint: update treatment fields or create if missing
+        """
+        patient_id = request.data.get("patient_id")
+        if not patient_id:
+            return Response({"error": "patient_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Filterable fields
-        string_fields = [
-            'procedures_done', 'follow_up_plan', 'treatment_given', 'referral_facility'
-        ]
-        for field in string_fields:
-            value = params.get(field)
-            if value:
-                queryset = queryset.filter(**{f"{field}__icontains": value})
+        try:
+            patient = PatientCase.objects.get(id=patient_id)
+        except PatientCase.DoesNotExist:
+            return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        return queryset
+        # Get or create treatment record for this patient
+        treatment_record, created = Treatment.objects.get_or_create(patient_id=patient)
+
+        serializer = TreatmentSerializer(treatment_record, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """Return summary statistics for Treatment cases"""
+        """
+        Return summary counts for charts
+        """
         data = {}
-
-        # Helper to return {key: count} dictionary
-        def count_dict(field):
-            return {item[field]: item['count'] for item in
-                    Treatment.objects.values(field)
-                    .annotate(count=Count('id'))
-                    .order_by('-count')}
-
-        for field in ['procedures_done', 'follow_up_plan', 'treatment_given', 'referral_facility']:
-            data[field] = count_dict(field)
-
+        for field in ['treatment_given', 'procedures_done', 'follow_up_plan', 'referral_facility']:
+            counts = Treatment.objects.values(field).annotate(count=Count('id'))
+            data[field] = {item[field]: item['count'] for item in counts}
         return Response(data)
