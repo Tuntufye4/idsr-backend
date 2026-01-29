@@ -44,9 +44,10 @@ class PatientCaseViewSet(viewsets.ModelViewSet):
         patient = serializer.save()
 
         # Automatically create empty related sections
-        ClinicalCase.objects.create(
+        ClinicalCase.objects.create(    
             patient_id=patient,
             disease='',
+            date_of_onset=None,   
             case_classification='',
             symptoms='',
             triage_level='',
@@ -70,6 +71,7 @@ class PatientCaseViewSet(viewsets.ModelViewSet):
             patient_id=patient,
             specimen_collected=False,
             specimen_sent_to_lab=False,
+            date_specimen_collected=None,     
             specimen_type='',
             lab_name='',
             lab_result='',
@@ -85,10 +87,12 @@ class PatientCaseViewSet(viewsets.ModelViewSet):
 
         Facility.objects.create(
             patient_id=patient,
+            date_reported=None,    
             case_source='',
             reporting_method='',
             designation='',
-            health_facility_code=''
+            health_facility_code='',
+            form_completed_by=''    
         )
 
         SurveillanceInfo.objects.create(
