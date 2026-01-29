@@ -4,15 +4,14 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('patients.urls')),
-    path('api/', include('clinical.urls')),
-    path('api/', include('epidemiological.urls')),     
-    path('api/', include('facility.urls')),
-    path('api/', include('lab.urls')),
-    path('api/', include('outcomes.urls')),
-    path('api/', include('surveillance_info.urls')),
-    path('api/', include('treatment.urls')),  
-    path('api/', include('opt.urls')),  
+    path('api/cases/', include('patients.urls')), 
+    path('api/clinical/', include('clinical.urls')),
+    path('api/epidemiological/', include('epidemiological.urls')),        
+    path('api/facility/', include('facility.urls')),
+    path('api/lab/', include('lab.urls')),
+    path('api/outcomes/', include('outcomes.urls')),   
+    path('api/surveillance_info/', include('surveillance_info.urls')),
+    path('api/treatment/', include('treatment.urls')),     
 ]     
         
 

@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import TreatmentViewSet  
 
 router = DefaultRouter()
-router.register(r'treatment', TreatmentViewSet, basename='treatmentcase')
+router.register(r'', TreatmentViewSet, basename='treatmentcase')
 
 urlpatterns = router.urls    
           

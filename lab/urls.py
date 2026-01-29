@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import LabViewSet
 
 router = DefaultRouter()
-router.register(r'lab', LabViewSet, basename='labcase')
+router.register(r'', LabViewSet, basename='labcase')
 
 urlpatterns = router.urls       
            
