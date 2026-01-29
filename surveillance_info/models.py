@@ -8,11 +8,11 @@ class SurveillanceInfo(models.Model):
         PatientCase,
         on_delete=models.SET_NULL,    
         null=True,            
-        related_name='surveillance_info'  # <-- unique reverse name    
+        related_name='surveillance_info'  # <-- unique reverse name       
     )    
     reporting_week_number = models.IntegerField()      
     year = models.IntegerField()   
-    date_reported = models.DateField()    
+    date_reported = models.DateField(blank=True, null=True)    
     notifier_signature = models.CharField(max_length=100, blank=True, null=True) 
     reviewed_by = models.CharField(max_length=100, blank=True, null=True)     
     supervisor_comments = models.CharField(max_length=100, blank=True, null=True)  

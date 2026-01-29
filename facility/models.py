@@ -11,7 +11,7 @@ class Facility(models.Model):
         related_name='facility'  # <-- unique reverse name    
     )  
     designation = models.CharField(max_length=100)
-    date_reported = models.DateField()
+    date_reported = models.DateField(blank=True, null=True)
     form_completed_by = models.CharField(max_length=200)      
     health_facility_code = models.CharField(max_length=50)  
     case_source = models.CharField(max_length=70)     
