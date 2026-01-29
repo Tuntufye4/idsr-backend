@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 class PatientCaseViewSet(viewsets.ModelViewSet):
     queryset = PatientCase.objects.all()
-    serializer_class = PatientCaseSerializer   
+    serializer_class = PatientCaseSerializer      
        
     def get_queryset(self):
         queryset = PatientCase.objects.all()

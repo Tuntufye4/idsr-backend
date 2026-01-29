@@ -1,137 +1,64 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.db.models import Count, Avg, Min, Max
+from django.db.models import Count
 from .models import ClinicalCase
-from .serializers import ClinicalCaseSerializer      
+from .serializers import ClinicalCaseSerializer
 
-class ClinicalCaseViewSet(viewsets.ModelViewSet): 
-    queryset = ClinicalCase.objects.all()   
-    serializer_class = ClinicalCaseSerializer   
+class ClinicalCaseViewSet(viewsets.ModelViewSet):   
+    """
+    API endpoint for Clinical Cases with:
+    - Dynamic filtering via query params
+    - Stats endpoint for charts
+    """
+    queryset = ClinicalCase.objects.all()
+    serializer_class = ClinicalCaseSerializer
 
     def get_queryset(self):
-        queryset = ClinicalCase.objects.all()   
-        symptoms = self.request.query_params.get('symptoms')
-        triage_level = self.request.query_params.get('triage_level')   
-        diagnosis_type = self.request.query_params.get('diagnosis_type')
-        admission_status = self.request.query_params.get('admission_status')
-        final_case_classification = self.request.query_params.get('final_case_classification')
-        contact_with_confirmed_case = self.request.query_params.get('contact_with_confirmed_case')
-        case_classification = self.request.query_params.get('case_classification')
-        disease = self.request.query_params.get('disease')
-        recent_travel_history = self.request.query_params.get('recent_travel_history')
-        travel_destination = self.request.query_params.get('travel_destination')
+        queryset = ClinicalCase.objects.all()
+        params = self.request.query_params
 
+        # String filters
+        string_fields = [
+            'symptoms', 'triage_level', 'diagnosis_type', 'admission_status',
+            'final_case_classification', 'case_classification', 'disease',
+            'travel_destination'
+        ]
+        for field in string_fields:
+            value = params.get(field)
+            if value:
+                queryset = queryset.filter(**{f"{field}__icontains": value})
 
-        if symptoms:
-            queryset = queryset.filter(symptoms__icontains=symptoms)
-
-        if triage_level:
-            queryset = queryset.filter(triage_level__icontains=triage_level)
-
-        if diagnosis_type:
-            queryset = queryset.filter(diagnosis_type__icontains=diagnosis_type)
-
-        if admission_status:
-            queryset = queryset.filter(admission_status__icontains=admission_status)
-
-        if final_case_classification:
-            queryset = queryset.filter(final_case_classification__icontains=final_case_classification)
-
-        if contact_with_confirmed_case:
-            queryset = queryset.filter(contact_with_confirmed_case__icontains=contact_with_confirmed_case)
-
-        if case_classification:
-            queryset = queryset.filter(case_classification__icontains=case_classification)
-   
-        if disease:
-            queryset = queryset.filter(disease__icontains=disease)
-
-        if recent_travel_history:
-            queryset = queryset.filter(recent_travel_history__icontains=recent_travel_history)
-        
-        if travel_destination:
-            queryset = queryset.filter(travel_destination__icontains=travel_destination)
+        # Boolean filters
+        bool_fields = ['contact_with_confirmed_case', 'recent_travel_history']
+        for field in bool_fields:
+            val = params.get(field)
+            if val is not None:
+                val_bool = val.lower() in ['true', '1', 'yes']
+                queryset = queryset.filter(**{field: val_bool})
 
         return queryset
-    
+
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """Return summary statistics for Clinical case"""
+        """Return summary statistics for charts"""
         data = {}
 
-        # Case counts per symptoms  
-        
-        data['symptoms'] = (
-            ClinicalCase.objects.values('symptoms')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
+        # Helper function for generating counts dict
+        def count_dict(field):
+            return {item[field]: item['count'] for item in
+                    ClinicalCase.objects.values(field).annotate(count=Count('id')).order_by('-count')}
 
-        # Case counts per triage level
+        # String fields
+        for field in ['symptoms', 'triage_level', 'diagnosis_type',
+                      'case_classification', 'final_case_classification',
+                      'admission_status', 'disease', 'travel_destination']:
+            data[field] = count_dict(field)
 
-        data['triagelevel'] = (
-            ClinicalCase.objects.values('triage_level')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-        
-        # Case counts per diagnosis_type
+        # Boolean fields
+        for field in ['contact_with_confirmed_case', 'recent_travel_history']:
+            counts = ClinicalCase.objects.values(field).annotate(count=Count('id'))
+            # Convert True/False to Yes/No for frontend readability
+            data[field] = {str(item[field]): item['count'] for item in counts}
 
-        data['diagnosistype'] = (
-            ClinicalCase.objects.values('diagnosis_type')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-        
-        # Case counts per case classification
-        
-        data['caseclassification'] = (
-            ClinicalCase.objects.values('case_classification')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-
-        data['final_caseclassification'] = (
-            ClinicalCase.objects.values('final_case_classification')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-
-        # Case counts per admission status
-        
-        data['admissionstatus'] = (
-            ClinicalCase.objects.values('admission_status')
-            .annotate(count=Count('id'))
-            .order_by('-count')     
-        )
-
-        data['contactwithconfirmedcase'] = (
-            ClinicalCase.objects.values('contact_with_confirmed_case')
-            .annotate(count=Count('id'))
-            .order_by('-count')    
-        )
-             
-
-        data['traveldestination'] = (
-            ClinicalCase.objects.values('travel_destination')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )    
-
-        
-        data['recenttravelhistory'] = (
-            ClinicalCase.objects.values('recent_travel_history')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )   
-
-        data['diseases'] = (
-            ClinicalCase.objects.values('disease')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-
-        return Response(data)    
-   
-    
+        return Response(data)

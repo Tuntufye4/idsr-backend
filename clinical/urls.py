@@ -8,4 +8,4 @@ router.register(r'clinical', ClinicalCaseViewSet, basename='clinicalcase')
 urlpatterns = router.urls  
   
 
-  
+    

@@ -1,60 +1,45 @@
 from rest_framework import viewsets
-from .models import Epidemiological_details
-from .serializers import EpidemiologicalSerializer   
-from rest_framework.decorators import action  
-from django.db.models import Count
+from rest_framework.decorators import action
 from rest_framework.response import Response
-  
+from django.db.models import Count
+from .models import Epidemiological_details
+from .serializers import EpidemiologicalSerializer
+
 class EpidemiologicalViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for Epidemiological details with:
+    - Dynamic filtering
+    - Stats endpoint for analytics/charts
+    """
     queryset = Epidemiological_details.objects.all()
-    serializer_class = EpidemiologicalSerializer  
+    serializer_class = EpidemiologicalSerializer
 
     def get_queryset(self):
         queryset = Epidemiological_details.objects.all()
-        environmental_risk_factors  = self.request.query_params.get('environmental_risk_factors')
-        exposure_source = self.request.query_params.get('exposure_source')
-        cluster_related = self.request.query_params.get('cluster_related')
-      
+        params = self.request.query_params
 
-        if environmental_risk_factors:
-            queryset = queryset.filter(environmental_risk_factors__iexact=environmental_risk_factors)
-
-        if exposure_source:
-            queryset = queryset.filter(exposure_source__icontains=exposure_source)
-
-        if cluster_related:
-            queryset = queryset.filter(cluster_related__icontains=cluster_related)
+        # String filters
+        string_fields = ['environmental_risk_factors', 'exposure_source', 'cluster_related']
+        for field in string_fields:
+            value = params.get(field)
+            if value:
+                queryset = queryset.filter(**{f"{field}__icontains": value})
 
         return queryset
-    
+
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """Return summary statistics for Epidemiological"""
+        """Return summary statistics for charts"""
         data = {}
 
-        # Env_risk_factors counts
-        data['environmental_risk_factors'] = (
-            Epidemiological_details.objects.values('environmental_risk_factors')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
+        # Helper function to return {key: count}
+        def count_dict(field):
+            return {item[field]: item['count'] for item in
+                    Epidemiological_details.objects.values(field)
+                    .annotate(count=Count('id'))
+                    .order_by('-count')}
 
-
-        # You can easily add more analytics:
-        data['exposure_source'] = (
-            Epidemiological_details.objects.values('exposure_source')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-
-        data['cluster_related'] = (
-            Epidemiological_details.objects.values('cluster_related')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-
+        for field in ['environmental_risk_factors', 'exposure_source', 'cluster_related']:
+            data[field] = count_dict(field)
 
         return Response(data)
-   
-   
-                                              

@@ -15,5 +15,5 @@ class PatientCase(models.Model):
     region = models.CharField(max_length=100)          
 
     def __str__(self):    
-        return f"{self.full_name} ({self.patient_id})"        
+        return f"{self.full_name} ({self.patient_id})"            
                                                 

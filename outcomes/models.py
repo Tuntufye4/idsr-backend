@@ -14,4 +14,5 @@ class Outcome_details(models.Model):
     date_of_outcome = models.DateField(blank=True, null=True)      
 
     def __str__(self):           
-        return f"{self.full_name} ({self.patient_id})"    
+        patient_name = self.patient_id.full_name if self.patient_id else "Unknown Patient"
+        return f"{patient_name} ({self.id})"      

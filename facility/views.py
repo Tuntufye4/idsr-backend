@@ -1,69 +1,45 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db.models import Count
 from .models import Facility
 from .serializers import FacilitySerializer
-from rest_framework.decorators import action  
-from django.db.models import Count
-from rest_framework.response import Response
 
 class FacilityViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for Facility cases with:
+    - Dynamic filtering
+    - Stats endpoint for analytics/charts
+    """
     queryset = Facility.objects.all()
-    serializer_class = FacilitySerializer                                    
+    serializer_class = FacilitySerializer
 
     def get_queryset(self):
         queryset = Facility.objects.all()
-        case_source  = self.request.query_params.get('case_source')
-        reporting_method = self.request.query_params.get('reporting_method')   
-        health_facility_code = self.request.query_params.get('health_facility_code')    
-        designation = self.request.query_params.get('designation') 
+        params = self.request.query_params
 
-        if case_source:
-            queryset = queryset.filter(case_source__iexact=case_source)
+        # Define fields that can be filtered
+        string_fields = ['case_source', 'reporting_method', 'health_facility_code', 'designation']
+        for field in string_fields:
+            value = params.get(field)
+            if value:
+                queryset = queryset.filter(**{f"{field}__icontains": value})
 
-        if reporting_method:
-            queryset = queryset.filter(reporting_method__icontains=reporting_method)
+        return queryset
 
-        if health_facility_code:
-            queryset = queryset.filter(health_facility_code__icontains=health_facility_code)
-
-        if designation:
-            queryset = queryset.filter(designation__icontains=designation)
-
-
-        return queryset     
-   
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """Return summary statistics for Facility"""
-        data = {}   
+        """Return summary statistics for Facility cases"""
+        data = {}
 
-        # Facility counts
-        data['casesource'] = (
-            Facility.objects.values('case_source')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
+        # Helper to return {key: count} dictionary
+        def count_dict(field):
+            return {item[field]: item['count'] for item in
+                    Facility.objects.values(field)
+                    .annotate(count=Count('id'))
+                    .order_by('-count')}
 
-
-        # You can easily add more analytics:
-        data['reportingmethod'] = (
-            Facility.objects.values('reporting_method')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-        
-        data['designation'] = (
-            Facility.objects.values('designation')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
-
-        data['healthfacilitycode'] = (
-            Facility.objects.values('health_facility_code')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-        )
+        for field in ['case_source', 'reporting_method', 'designation', 'health_facility_code']:
+            data[field] = count_dict(field)
 
         return Response(data)
-   
-   
-                                              
