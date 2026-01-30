@@ -1,5 +1,4 @@
 # models.py (Django backend updated for full patient data model)
-import uuid   
 from django.db import models
 from patients.models import PatientCase   
 
@@ -23,6 +22,6 @@ class ClinicalCase(models.Model):
     travel_destination = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):    
-        patient_name = self.patient_id.full_name if self.patient_id else "Unknown Patient"
+        patient_name = self.patient_id.full_name if self.patient_id else "Unknown Patient"  
         return f"{patient_name} ({self.id})"            
                                           

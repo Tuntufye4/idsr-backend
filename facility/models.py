@@ -1,5 +1,4 @@
-# models.py (Django backend updated for full patient data model)
-import uuid   
+# models.py (Django backend updated for full patient data model)   
 from django.db import models
 from patients.models import PatientCase
 

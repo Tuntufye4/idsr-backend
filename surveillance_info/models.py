@@ -1,5 +1,4 @@
-# models.py (Django backend updated for full patient data model)
-import uuid   
+# models.py (Django backend updated for full patient data model)   
 from django.db import models
 from patients.models import PatientCase
 
@@ -9,7 +8,7 @@ class SurveillanceInfo(models.Model):
         on_delete=models.SET_NULL,    
         null=True,            
         related_name='surveillance_info'  # <-- unique reverse name       
-    )    
+    )       
     reporting_week_number = models.IntegerField(null=True)      
     year = models.IntegerField(null=True)   
     date_reported = models.DateField(blank=True, null=True)    
