@@ -10,7 +10,7 @@ class LabViewSet(viewsets.ModelViewSet):
     """
     API endpoint for Lab cases:
     - Dynamic filtering
-    - PATCH auto-creates a record if missing
+    - PATCH by patient_id (creates if missing)
     - Stats endpoint
     """
     queryset = Lab.objects.all()
@@ -20,9 +20,8 @@ class LabViewSet(viewsets.ModelViewSet):
         queryset = Lab.objects.all()
         params = self.request.query_params
 
-        # Filterable fields
         string_fields = [
-            'specimen_type', 'lab_result', 'lab_tests_ordered', 
+            'specimen_type', 'lab_result', 'lab_tests_ordered',
             'lab_name', 'specimen_collected', 'specimen_sent_to_lab'
         ]
         for field in string_fields:
@@ -32,24 +31,32 @@ class LabViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    def partial_update(self, request, pk=None, *args, **kwargs):
+    @action(
+        detail=False,
+        methods=['patch'],
+        url_path=r'by-patient/(?P<patient_id>\d+)'
+    )
+    def patch_by_patient(self, request, patient_id=None):
         """
-        PATCH endpoint: create Lab record if it doesn't exist for patient_id
+        PATCH by patient_id: create Lab record if missing, update fields.
         """
-        patient_id = request.data.get("patient_id")
-        if not patient_id:
-            return Response({"error": "patient_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            patient = PatientCase.objects.get(id=patient_id)
-        except PatientCase.DoesNotExist:
+            patient = PatientCase.objects.get(patient_id=patient_id)   
+        except PatientCase.DoesNotExist:    
             return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # Get or create lab record for this patient
-        lab_record, created = Lab.objects.get_or_create(patient_id=patient)
+        lab_record, _ = Lab.objects.get_or_create(patient_id=patient)
+   
+        # Only update provided fields
+        data = {k: v for k, v in request.data.items() if v is not None}
+        serializer = LabSerializer(lab_record, data=data, partial=True)
+  #      serializer.is_valid(raise_exception=True)
 
-        serializer = LabSerializer(lab_record, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():                                       
+            # Debug: print validation errors
+           print("Lab PATCH validation errors:", serializer.errors)
+           return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data)
 
@@ -59,14 +66,16 @@ class LabViewSet(viewsets.ModelViewSet):
         data = {}
 
         def count_dict(field):
-            return {item[field]: item['count'] for item in
-                    Lab.objects.values(field)
-                        .annotate(count=Count('id'))
-                        .order_by('-count')}
+            return {
+                item[field]: item['count'] for item in
+                Lab.objects.values(field)
+                    .annotate(count=Count('id'))
+                    .order_by('-count')
+            }
 
         for field in ['specimen_type', 'lab_result', 'lab_tests_ordered',
                       'lab_name', 'specimen_collected', 'specimen_sent_to_lab']:
             data[field] = count_dict(field)
 
         return Response(data)
-     
+   

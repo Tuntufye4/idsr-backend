@@ -7,30 +7,49 @@ from .serializers import TreatmentSerializer
 from patients.models import PatientCase
 
 class TreatmentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for Treatment cases:
+    - Dynamic filtering
+    - PATCH by patient_id (auto-create if missing)
+    - Stats endpoint
+    """
     queryset = Treatment.objects.all()
     serializer_class = TreatmentSerializer
 
-    def partial_update(self, request, pk=None, *args, **kwargs):
-        """
-        PATCH endpoint: update treatment fields or create if missing
-        """
-        patient_id = request.data.get("patient_id")
-        if not patient_id:
-            return Response({"error": "patient_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        queryset = Treatment.objects.all()
+        params = self.request.query_params
 
+        string_fields = ['treatment_given', 'procedures_done', 'follow_up_plan', 'referral_facility']
+        for field in string_fields:
+            value = params.get(field)
+            if value:
+                queryset = queryset.filter(**{f"{field}__icontains": value})
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=['patch'],
+        url_path=r'by-patient/(?P<patient_id>\d+)'
+    )
+    def patch_by_patient(self, request, patient_id=None):
+        """
+        PATCH by patient_id: create Treatment record if missing, update fields.
+        """    
         try:
-            patient = PatientCase.objects.get(id=patient_id)
+            patient = PatientCase.objects.get(patient_id=patient_id)
         except PatientCase.DoesNotExist:
             return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Get or create treatment record for this patient
-        treatment_record, created = Treatment.objects.get_or_create(patient_id=patient)
+        treatment_record, _ = Treatment.objects.get_or_create(patient_id=patient)   
 
-        serializer = TreatmentSerializer(treatment_record, data=request.data, partial=True)
+        data = {k: v for k, v in request.data.items() if v is not None}
+        serializer = TreatmentSerializer(treatment_record, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
+        serializer.save()   
+        return Response(serializer.data)   
+           
     @action(detail=False, methods=['get'])
     def stats(self, request):
         """
@@ -41,3 +60,4 @@ class TreatmentViewSet(viewsets.ModelViewSet):
             counts = Treatment.objects.values(field).annotate(count=Count('id'))
             data[field] = {item[field]: item['count'] for item in counts}
         return Response(data)
+          

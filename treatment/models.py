@@ -9,7 +9,7 @@ class Treatment(models.Model):
         null=True,            
         related_name='treatment'  # <-- unique reverse name    
     )         
-    treatment_given = models.CharField(max_length=100, null=True)   
+    treatment_given = models.CharField(max_length=100, null=True)     
     procedures_done = models.CharField(max_length=100, null=True) 
     follow_up_plan = models.CharField(max_length=100, null=True)
     referral_facility = models.CharField(max_length=100, null=True)         

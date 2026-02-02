@@ -7,6 +7,12 @@ from .serializers import SurveillanceSerializer
 from patients.models import PatientCase  # assuming Surveillance links to a patient
 
 class SurveillanceViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for Surveillance info:
+    - Dynamic filtering
+    - PATCH by patient_id (auto-create if missing)
+    - Stats endpoint
+    """
     queryset = SurveillanceInfo.objects.all()
     serializer_class = SurveillanceSerializer
 
@@ -14,7 +20,6 @@ class SurveillanceViewSet(viewsets.ModelViewSet):
         queryset = SurveillanceInfo.objects.all()
         params = self.request.query_params
 
-        # Filters
         if year := params.get('year'):
             queryset = queryset.filter(year__iexact=year)
         if reviewed_by := params.get('reviewed_by'):
@@ -22,23 +27,26 @@ class SurveillanceViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    def partial_update(self, request, pk=None, *args, **kwargs):
+    @action(
+        detail=False,
+        methods=['patch'],
+        url_path=r'by-patient/(?P<patient_id>\d+)'
+    )
+    def patch_by_patient(self, request, patient_id=None):
         """
-        PATCH endpoint: auto-create record if missing for patient
-        """
-        patient_id = request.data.get("patient_id")
-        if not patient_id:
-            return Response({"error": "patient_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-
+        PATCH by patient_id: create Surveillance record if missing, update fields.
+        """    
         try:
-            patient = PatientCase.objects.get(id=patient_id)
+            patient = PatientCase.objects.get(patient_id=patient_id)   
         except PatientCase.DoesNotExist:
             return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Get or create Surveillance record for this patient
-        surveillance_record, created = SurveillanceInfo.objects.get_or_create(patient_id=patient)
+        # Get or create surveillance record for this patient         
+        surveillance_record, _ = SurveillanceInfo.objects.get_or_create(patient_id=patient)
 
-        serializer = SurveillanceSerializer(surveillance_record, data=request.data, partial=True)
+        # Only update provided fields
+        data = {k: v for k, v in request.data.items() if v is not None}
+        serializer = SurveillanceSerializer(surveillance_record, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
